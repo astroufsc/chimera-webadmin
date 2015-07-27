@@ -1,13 +1,14 @@
 from distutils.core import setup
 
 setup(
-    name='chimera_template',
+    name='chimera-webadmin',
     version='0.0.1',
-    packages=['chimera_template', 'chimera_template.instruments', 'chimera_template.controllers'],
+    packages=['chimera_webadmin', 'chimera_webadmin.controllers'],
     scripts=[],
-    url='http://github.com/astroufsc/chimera-template',
+    install_requires=['CherryPy'],
+    url='http://github.com/astroufsc/chimera-webadmin',
     license='GPL v2',
     author='William Schoenell',
     author_email='william@iaa.es',
-    description='Template for chimera plugins'
+    description='A simple Chimera controller plugin to start/stop a telescope via web'
 )
