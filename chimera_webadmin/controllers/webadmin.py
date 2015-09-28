@@ -63,8 +63,8 @@ class WebAdmin (ChimeraObject):
     __config__ = {"dome": "/Dome/0",
                   "scheduler": "/Scheduler/0",
                   "telescope": "/Telescope/0",
-                  "host": "default",
-                  "port": 50000}
+                  "socket_host": "default",
+                  "socket_port": 50000}
 
     def __init__(self):
         ChimeraObject.__init__(self)
@@ -80,12 +80,14 @@ class WebAdmin (ChimeraObject):
                 "No dome, scheduler or telescope available, Web Admin would be disabled.")
             return False
 
-        if self["host"] == "default":
-            self["host"] = self.getManager().getHostname()
+        if self["socket_host"] == "default":
+            self["socket_host"] = self.getManager().getHostname()
 
-        cherrypy.config.update({"engine.autoreload_on": False,
-                                "server.socket_host": self["host"],
-                                "server.socket_port": self["port"],
+        self.log.info("lisetning on '%s'" % self['socket_host'])
+
+        cherrypy.config.update({"engine.autoreload.on": False,
+                                "server.socket_host": self['socket_host'],
+                                "server.socket_port": self["socket_port"],
                                 "log.screen": False,
                                 "log.error_file": os.path.join(SYSTEM_CONFIG_DIRECTORY, "webadmin_error.log"),
                                 "log.access_file": os.path.join(SYSTEM_CONFIG_DIRECTORY, "webadmin_access.log")})
