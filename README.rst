@@ -1,20 +1,21 @@
-chimera-template plugin
+chimera-webadmin plugin
 =======================
 
-This is a template plugin for the chimera observatory control system
-https://github.com/astroufsc/chimera.
+A simple plugin to START/STOP/RESUME robotic telescope operations from the web. It is useful when an operator is in
+charge of starting/stopping the operations in the observatory.
+
+.. image:: docs/WebAdmin.png
+   :align: center
+
+**Note:** This plugin is intended to be used on internal networks (i.e. only observatory-wide or networks accessed over
+a VPN and behind a firewall). There is no security implemented on this plugin.
+
 
 Usage
 -----
 
-Rename chimera_template for your plugin name. It is important that the plugin
-name must start with chimera\_ to be found by chimera. Instruments and
-controllers must follow the standard ``chimera_(plugin_name)/(instruments|controllers)/(plugin).py``
-
-The class inside ``(plugin).py`` should be named Plugin (with CamelCase letters).
-
-For more info: https://github.com/astroufsc/chimera/blob/master/docs/site/chimerafordevs.rst#chimera-objects
-
+Install chimera-webadmin and add a controller of type WebAdmin on the configuration file. Then open in the browser the
+webpage http://localhost:50000/
 
 Installation
 ------------
@@ -23,34 +24,21 @@ Installation instructions. Dependencies, etc...
 
 ::
 
-   pip install -U chimera_template
-
-or
-
-::
-
-    pip install -U git+https://github.com/astroufsc/chimera-template.git
+    pip install -U git+https://github.com/astroufsc/chimera-webadmin.git
 
 
 Configuration Example
 ---------------------
 
-Here goes an example of the configuration to be added on ``chimera.config`` file.
+This example changes the listen port from the default `50000` to the port `8088` and forces the WebAdmin socket to listen
+on all interfaces.
 
 ::
 
-    instrument:
-        name: model
-        type: Example
-
-
-Tested Hardware (for instruments)
----------------------------------
-
-This plugin was tested on these hardware:
-
-* Hardware example 1, model 2
-* Hardware example 2, model 3
+  - type: WebAdmin
+    name: webadmin
+    socket_host: 0.0.0.0
+    socket_port: 8088
 
 
 Contact
@@ -60,4 +48,4 @@ For more information, contact us on chimera's discussion list:
 https://groups.google.com/forum/#!forum/chimera-discuss
 
 Bug reports and patches are welcome and can be sent over our GitHub page:
-https://github.com/astroufsc/chimera-template/
+https://github.com/astroufsc/chimera-webadmin/
