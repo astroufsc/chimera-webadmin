@@ -6,6 +6,7 @@ setup(
     packages=['chimera_webadmin', 'chimera_webadmin.controllers'],
     scripts=[],
     install_requires=['CherryPy'],
+    package_data={'': ['jquery-1.11.3.min.js', 'webadmin.html']},
     url='http://github.com/astroufsc/chimera-webadmin',
     license='GPL v2',
     author='William Schoenell',
