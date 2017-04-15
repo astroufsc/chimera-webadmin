@@ -24,8 +24,9 @@ class WebAdminRoot (object):
     def start(self):
 
         try:
-            self.controller.dome.openSlit()
             self.controller.telescope.unpark()
+            self.controller.dome.openSlit()
+            self.controller.dome.track()
             # clean scheduler database
             self.controller.scheduler.restartAllPrograms()
             self.controller.scheduler.start()
@@ -39,8 +40,11 @@ class WebAdminRoot (object):
 
         try:
             self.controller.scheduler.stop()
-            self.controller.telescope.park()
             self.controller.dome.closeSlit()
+            self.controller.dome.stand()
+            if self.controller.dome["park_position"] is not None:
+                self.controller.dome.slewToAz(float(self.controller.dome["park_position"]))
+            self.controller.telescope.park()
         except Exception, e:
             return "Error trying to STOP the system! %s" % str(e)
 
@@ -49,8 +53,9 @@ class WebAdminRoot (object):
     @cherrypy.expose
     def pause(self):
         try:
-            self.controller.dome.openSlit()
             self.controller.telescope.unpark()
+            self.controller.dome.openSlit()
+            self.controller.dome.track()
             self.controller.scheduler.start()
         except Exception, e:
             return "Error trying to RESUME the observations! %s" % str(e)
