@@ -23,13 +23,11 @@ class WebAdminRoot (object):
     @cherrypy.expose
     def start(self):
 
+        if self.controller["start_action"] is None:
+            return "No START action configured. Skipping..."
+
         try:
-            self.controller.telescope.unpark()
-            self.controller.dome.openSlit()
-            self.controller.dome.track()
-            # clean scheduler database
-            self.controller.scheduler.restartAllPrograms()
-            self.controller.scheduler.start()
+            self.controller.supervisor.runAction(self.controller["start_action"])
         except Exception, e:
             return "Error trying to START the system! %s" % str(e)
 
@@ -38,13 +36,11 @@ class WebAdminRoot (object):
     @cherrypy.expose
     def stop(self):
 
+        if self.controller["stop_action"] is None:
+            return "No STOP action configured. Skipping..."
+
         try:
-            self.controller.scheduler.stop()
-            self.controller.dome.closeSlit()
-            self.controller.dome.stand()
-            if self.controller.dome["park_position"] is not None:
-                self.controller.dome.slewToAz(float(self.controller.dome["park_position"]))
-            self.controller.telescope.park()
+            self.controller.supervisor.runAction(self.controller["stop_action"])
         except Exception, e:
             return "Error trying to STOP the system! %s" % str(e)
 
@@ -52,11 +48,12 @@ class WebAdminRoot (object):
 
     @cherrypy.expose
     def pause(self):
+
+        if self.controller["resume_action"] is None:
+            return "No RESUME action configured. Skipping..."
+
         try:
-            self.controller.telescope.unpark()
-            self.controller.dome.openSlit()
-            self.controller.dome.track()
-            self.controller.scheduler.start()
+            self.controller.supervisor.runAction(self.controller["resume_action"])
         except Exception, e:
             return "Error trying to RESUME the observations! %s" % str(e)
 
@@ -65,11 +62,12 @@ class WebAdminRoot (object):
 
 class WebAdmin (ChimeraObject):
 
-    __config__ = {"dome": "/Dome/0",
-                  "scheduler": "/Scheduler/0",
-                  "telescope": "/Telescope/0",
+    __config__ = {"supervisor": "/Supervisor/0",
+                  "start_action": None,
+                  "resume_action": None,
+                  "stop_action": None,
                   "socket_host": "default",
-                  "socket_port": 50000}
+                  "socket_port": 5000}
 
     def __init__(self):
         ChimeraObject.__init__(self)
@@ -77,12 +75,10 @@ class WebAdmin (ChimeraObject):
     def __start__(self):
 
         try:
-            self.dome = self.getManager().getProxy(self["dome"])
-            self.scheduler = self.getManager().getProxy(self["scheduler"])
-            self.telescope = self.getManager().getProxy(self["telescope"])
+            self.supervisor = self.getManager().getProxy(self["supervisor"])
         except Exception:
             self.log.warning(
-                "No dome, scheduler or telescope available, Web Admin would be disabled.")
+                "Supervisor not found, Web Admin will be disabled.")
             return False
 
         if self["socket_host"] == "default":
